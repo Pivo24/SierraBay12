@@ -11,7 +11,7 @@
  */
 
 /obj/item/gun/projectile/automatic/assault_rifle/heltek
-	name = "LA-700"
+	name = "LA-700 assault rifle"
 	desc = "HelTek LA-700 is a standart equipment of ICCG Space-assault Forces. Looks very similiar to STS-35."
 	icon = 'mods/guns/icons/obj/iccg_rifle.dmi'
 	icon_state = "iccg_rifle"
@@ -31,7 +31,7 @@
 		wielded_item_state = "arifle-wielded-empty"
 
 /obj/item/gun/projectile/automatic/mr735
-	name = "MR-735"
+	name = "MR-735 assault rifle"
 	desc = "A cheap rifle for close quarters combat, with an auto-firing mode available. HelTek MR-735 is a standard rifle for ICCG Space-assault Forces, designed without a stock for easier storage and combat in closed spaces. Perfect weapon for some ship's crew."
 	icon = 'mods/guns/icons/obj/mr735.dmi'
 	icon_state = "nostockrifle"
@@ -54,9 +54,9 @@
 
 	//Assault rifle, burst fire degrades quicker than SMG, worse one-handing penalty, slightly increased move delay
 	firemodes = list(
-		list(mode_name="semi auto",      burst=1,    fire_delay=null, one_hand_penalty=8,  burst_accuracy=null,                dispersion=null),
-		list(mode_name="2-round bursts", burst=2,    fire_delay=null, one_hand_penalty=9,  burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
-		list(mode_name="full auto",      burst=1,    fire_delay=1.7,    burst_delay=1.3,     one_hand_penalty=7,  burst_accuracy=list(0,-1,-1), dispersion=list(1.3, 1.5, 1.7, 1.9, 2.2), autofire_enabled=1)
+		list("mode_name" = "semi auto",      burst=1,    fire_delay=null, one_hand_penalty=8,  burst_accuracy=null,                dispersion=null),
+		list("mode_name" = "2-round bursts", burst=2,    fire_delay=null, one_hand_penalty=9,  burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
+		list("mode_name" = "full auto",      burst=1,    fire_delay=1.7,    burst_delay=1.3,     one_hand_penalty=7,  burst_accuracy=list(0,-1,-1), dispersion=list(1.3, 1.5, 1.7, 1.9, 2.2), autofire_enabled=1)
 		)
 
 /obj/item/gun/projectile/automatic/mr735/on_update_icon()
@@ -70,7 +70,7 @@
 
 
 /obj/item/gun/projectile/automatic/mbr
-	name = "MBR"
+	name = "MBR carabine"
 	desc = "A shabby bullpup carbine. Despite its size, it looks a little uncomfortable, but it is robust. HelTek MBR is a standart equipment of ICCG Space-assault Forces, designed in a bullpup layout. Possesses autofire and is perfect for the ship's crew."
 	icon = 'mods/guns/icons/obj/mbr_bullpup.dmi'
 	icon_state = "mbr_bullpup"
@@ -92,9 +92,9 @@
 	mag_remove_sound = 'sound/weapons/guns/interaction/ltrifle_magout.ogg'
 
 	firemodes = list(
-		list(mode_name="semi auto",      burst=1,    fire_delay=null, one_hand_penalty=8,  burst_accuracy=null,                dispersion=null),
-		list(mode_name="2-round bursts", burst=2,    fire_delay=null, one_hand_penalty=9,  burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
-		list(mode_name="full auto",      burst=1,    fire_delay=1.7,    burst_delay=1.3,     one_hand_penalty=7,  burst_accuracy=list(0,-1,-1), dispersion=list(1.3, 1.5, 1.7, 1.9, 2.2), autofire_enabled=1)
+		list("mode_name" = "semi auto",      burst=1,    fire_delay=null, one_hand_penalty=8,  burst_accuracy=null,                dispersion=null),
+		list("mode_name" = "2-round bursts", burst=2,    fire_delay=null, one_hand_penalty=9,  burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
+		list("mode_name" = "full auto",      burst=1,    fire_delay=1.7,    burst_delay=1.3,     one_hand_penalty=7,  burst_accuracy=list(0,-1,-1), dispersion=list(1.3, 1.5, 1.7, 1.9, 2.2), autofire_enabled=1)
 		)
 
 /obj/item/gun/projectile/automatic/mbr/on_update_icon()
@@ -110,7 +110,7 @@
  */
 
 /obj/item/gun/energy/laser/bonfire
-	name = "Bonfire Carbine"
+	name = "Bonfire-75 carbine"
 	desc = "Strange construction: laser carbine with underslung grenade launcher and very capable internal battery. HelTek Bonfire-75 is a weapon designed for suppressive fire in close quarters, where usage of ballistic weaponry will be uneffective or simply hazardous."
 	icon = 'mods/guns/icons/obj/bonfire.dmi'
 	icon_state = "bonfire"
@@ -133,9 +133,9 @@
 	wielded_item_state = "bonfire-wielded"
 
 	firemodes = list(
-		list(mode_name="semi auto",       burst=1, fire_delay=null, one_hand_penalty=0, burst_accuracy=null, dispersion=null),
-		list(mode_name="3-ray bursts", burst=3, fire_delay=null, one_hand_penalty=1, burst_accuracy=list(0,0,-1,-1),       dispersion=list(0.0, 0.0, 0.5, 0.6)),
-		list(mode_name="fire grenades",  burst=null, fire_delay=null,  use_launcher=1,    one_hand_penalty=10, burst_accuracy=null, dispersion=null)
+		list("mode_name" = "semi auto",       burst=1, fire_delay=null, one_hand_penalty=0, burst_accuracy=null, dispersion=null),
+		list("mode_name" = "3-ray bursts", burst=3, fire_delay=null, one_hand_penalty=1, burst_accuracy=list(0,0,-1,-1),       dispersion=list(0.0, 0.0, 0.5, 0.6)),
+		list("mode_name" = "fire grenades",  burst=null, fire_delay=null,  use_launcher=1,    one_hand_penalty=10, burst_accuracy=null, dispersion=null)
 		)
 
 	var/use_launcher = 0
@@ -164,6 +164,11 @@
 			switch_firemodes() //switch back automatically
 	else
 		..()
+
+/obj/item/gun/energy/laser/bonfire/toggle_safety(mob/user)
+	..()
+	if(launcher)
+		launcher.safety_state = safety_state //Set the launcher's safety to be equivalent to the bullpup's.
 
 /obj/item/gun/energy/ionrifle/small/stupor
 	name = "Stupor ion pistol"
@@ -225,11 +230,14 @@
 	accuracy = 1
 	one_hand_penalty = 4
 
+	barrel_thread = TRUE
+	silencer_offset = 6
+
 	//SMG
 	firemodes = list(
-		list(mode_name="semi auto",       burst=1, fire_delay=null,    move_delay=null, one_hand_penalty=4, burst_accuracy=null, dispersion=null),
-		list(mode_name="3-round bursts", burst=3, fire_delay=null, move_delay=4,    one_hand_penalty=5, burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
-		list(mode_name="short bursts",   burst=5, fire_delay=null, move_delay=4,    one_hand_penalty=6, burst_accuracy=list(0,-1,-1,-1,-2), dispersion=list(0.6, 0.6, 1.0, 1.0, 1.2)),
+		list("mode_name" = "semi auto",       burst=1, fire_delay=null,    move_delay=null, one_hand_penalty=4, burst_accuracy=null, dispersion=null),
+		list("mode_name" = "3-round bursts", burst=3, fire_delay=null, move_delay=4,    one_hand_penalty=5, burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.6, 1.0)),
+		list("mode_name" = "short bursts",   burst=5, fire_delay=null, move_delay=4,    one_hand_penalty=6, burst_accuracy=list(0,-1,-1,-1,-2), dispersion=list(0.6, 0.6, 1.0, 1.0, 1.2)),
 		)
 
 /obj/item/gun/projectile/automatic/sol_smg/on_update_icon()
@@ -278,13 +286,14 @@
 //C-20A
 /obj/item/gun/projectile/automatic/sec_smg/c20a
 	name = "C-20A carabine"
-	desc = "A licensed derivative of the infamous C-20r SMG, the C-20A is a lightweight carabine produced by NanoTrasen. Chambered in 7mm Usurpator rounds, the weapon trades bullet mass for muzzle velocity, thus becoming much more effective at longer ranges."
+	desc = "A licensed derivative of the infamous C-20r SMG, the C-20A is a lightweight carabine produced by NanoTrasen. Chambered in 7mm Usurpator rounds, the weapon trades bullet mass for muzzle velocity and superior ergonomics."
 	icon_state = "c20a"
 	item_state = "c20a"
+	wielded_item_state = "c20a"
 	icon = 'mods/guns/icons/obj/nt_smg.dmi'
 	item_icons = list(
-		slot_r_hand_str = 'mods/guns/icons/mob/righthand_guns.dmi',
-		slot_l_hand_str = 'mods/guns/icons/mob/lefthand_guns.dmi',
+		slot_r_hand_str = 'mods/guns/icons/mob/righthand_sec_smg.dmi',
+		slot_l_hand_str = 'mods/guns/icons/mob/lefthand_sec_smg.dmi',
 		)
 	safety_icon = "safety"
 	slot_flags = SLOT_BELT|SLOT_BACK
@@ -297,8 +306,12 @@
 	..()
 	if(ammo_magazine)
 		icon_state = "c20a-[round(length(ammo_magazine.stored_ammo),4)]"
+		item_state = "c20a"
+		wielded_item_state = "c20a"
 	else
 		icon_state = "c20a"
+		item_state = "c20a-empty"
+		wielded_item_state = "c20a-empty"
 
 /obj/item/gun/projectile/automatic/sec_smg/c20a/empty
 	starts_loaded = FALSE
@@ -345,7 +358,12 @@
 	icon_state = "smallcasing_f"
 
 /obj/item/projectile/bullet/pistol/holdout/ap
+	damage = 30
 	armor_penetration = 15
+	//[SIERRA-ADD] - Mechs-by-Shegar
+	mech_armor_penetration = 0
+	mech_armor_damage = 20 //15 попаданий чтоб сорвать броню
+	//[SIERRA-ADD]
 
 /obj/item/storage/box/ammo/smg_nt
 	name = "box of 7mm box magazines - lethal"
@@ -358,3 +376,8 @@
 /obj/item/storage/box/ammo/smg_nt/ap
 	name = "box of 7mm box magazines - armor piercing"
 	startswith = list(/obj/item/ammo_magazine/smg_nt/ap = 4)
+
+// Ammo Box
+
+/obj/item/ammobox/pistol/small_ap
+	ammo_type = /obj/item/ammo_casing/pistol/small/ap

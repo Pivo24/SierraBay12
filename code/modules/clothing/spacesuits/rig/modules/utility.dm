@@ -155,7 +155,7 @@
 		list("dylovene",      "dylovene",      /datum/reagent/dylovene,          80),
 		list("hyronalin",     "hyronalin",     /datum/reagent/hyronalin,         80),
 		list("spaceacillin",  "spaceacillin",  /datum/reagent/spaceacillin,      80),
-		list("tramadol",      "tramadol",      /datum/reagent/tramadol,          80)
+		list("tramadol",      "tramadol",      /datum/reagent/opiate/tramadol,          80)
 		)
 
 	var/max_reagent_volume = 80 //Used when refilling.
@@ -174,7 +174,7 @@
 		list("dermaline",     "dermaline",     /datum/reagent/dermaline,         20),
 		list("spaceacillin",  "spaceacillin",  /datum/reagent/spaceacillin,      20),
 		list("coagulant",     "coagulant",     /datum/reagent/coagulant,         20),
-		list("tramadol",      "tramadol",      /datum/reagent/tramadol,          20)
+		list("tramadol",      "tramadol",      /datum/reagent/opiate/tramadol,          20)
 		)
 
 /obj/item/rig_module/chem_dispenser/accepts_item(obj/item/input_item, mob/living/user)
@@ -254,19 +254,36 @@
 
 /obj/item/rig_module/chem_dispenser/combat
 
-	name = "combat chemical injector"
+	name = "combat chemical dispenser"
 	desc = "A complex web of tubing and needles suitable for hardsuit use."
+	max_reagent_volume = 60 // Equivalent to a beaker, a bit less than the injector since this is tailored for individual usage
 
 	charges = list(
-		list("synaptizine", "synaptizine", /datum/reagent/synaptizine,       30),
-		list("hyperzine",   "hyperzine",   /datum/reagent/hyperzine,         30),
-		list("oxycodone",   "oxycodone",   /datum/reagent/tramadol/oxycodone,         30),
-		list("glucose",     "glucose",     /datum/reagent/nutriment/glucose, 80),
+		list("synaptizine", "synaptizine", /datum/reagent/synaptizine,        30),
+		list("hyperzine",   "hyperzine",   /datum/reagent/hyperzine,          30),
+		list("oxycodone",   "oxycodone",   /datum/reagent/opiate/oxycodone, 30),
+		list("glucose",     "glucose",     /datum/reagent/nutriment/glucose,  60)
 		)
 
 	interface_name = "combat chem dispenser"
 	interface_desc = "Dispenses loaded chemicals directly into the bloodstream."
 
+/obj/item/rig_module/chem_dispenser/combat/ert
+	name = "\improper ERT combat chemical auto-injector"
+	desc = "A complex web of tubing and needles suitable for hardsuit use."
+	max_reagent_volume = 30 // ERT has access to most chems in large quantities, so prevent them from going too crazy
+
+	charges = list(
+		list("synaptizine",   "synaptizine",   /datum/reagent/synaptizine,        10),
+		list("inaprovaline",  "inaprovaline",  /datum/reagent/inaprovaline,       30),
+		list("oxycodone",     "oxycodone",     /datum/reagent/opiate/oxycodone, 10),
+		list("tricordrazine", "tricordrazine", /datum/reagent/tricordrazine,      15),
+		list("coagulant",     "coagulant",     /datum/reagent/coagulant,          15),
+		list("dexalin plus",  "dexalin plus",  /datum/reagent/dexalinp,           30),
+		list("glucose",       "glucose",       /datum/reagent/nutriment/glucose,  30)
+		)
+
+	interface_name = "combat chemical auto-injector"
 
 /obj/item/rig_module/chem_dispenser/injector
 
@@ -280,6 +297,21 @@
 
 	interface_name = "mounted chem injector"
 	interface_desc = "Dispenses loaded chemicals via an arm-mounted injector."
+
+/obj/item/rig_module/chem_dispenser/injector/ert
+	name = "\improper ERT mounted chemical injector"
+	max_reagent_volume = 50
+
+	charges = list(
+		list("dexalin plus",  "dexalin plus",  /datum/reagent/dexalinp,           50),
+		list("inaprovaline",  "inaprovaline",  /datum/reagent/inaprovaline,       50),
+		list("dermaline",     "dermaline",     /datum/reagent/dermaline,          30),
+		list("bicaridine",    "bicaridine",    /datum/reagent/bicaridine,         40),
+		list("oxycodone",     "oxycodone",     /datum/reagent/opiate/oxycodone, 40),
+		list("dylovene",      "dylovene",      /datum/reagent/dylovene,           50)
+		)
+
+	interface_name = "mounted chemical injector"
 
 /obj/item/rig_module/voice
 

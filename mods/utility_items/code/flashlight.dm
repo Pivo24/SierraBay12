@@ -21,6 +21,8 @@
 /obj/item/device/flashlight/drone
 	suitable_cell = null
 
+/obj/item/device/flashlight/lantern
+	suitable_cell = null
 /obj/item/device/flashlight/flare
 	suitable_cell = null
 
@@ -36,7 +38,7 @@
 	return cell
 
 /obj/item/device/flashlight/proc/get_power_cost()
-	return abs(power_cost * flashlight_power / 2)
+	return abs(power_cost * flashlight_power / 6)
 
 /obj/item/device/flashlight/Process()
 	if(on && suitable_cell)
@@ -84,10 +86,10 @@
 	update_icon()
 
 /obj/item/device/flashlight/MouseDrop(over_object)
-	if(istype(over_object, /obj/screen/inventory))
+	if(istype(over_object, /obj/screen/item_relayed/inventory_slot))
 		if(ismob(usr))
 			var/mob/user = usr
-			var/obj/screen/inventory/hand = over_object
+			var/obj/screen/item_relayed/inventory_slot/hand = over_object
 			if(!user.stat && hand.name && (loc == user) && eject_item_from(cell, user))
 				turn_off()
 				cell = null

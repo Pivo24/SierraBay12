@@ -67,7 +67,7 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 	pref.body_markings = R.read("body_markings")
 	pref.body_descriptors = R.read("body_descriptors")
 	pref.picked_traits = R.read("traits")
-	pref.picked_traits = sanitize_trait_prefs(pref.picked_traits)
+	pref.picked_traits = sanitize_trait_prefs(pref.picked_traits, R.get_version())
 
 
 /datum/category_item/player_setup_item/physical/body/save_character(datum/pref_record_writer/W)
@@ -481,6 +481,10 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 
 	else if(href_list["marking_style"])
 		var/list/disallowed_markings = list()
+		//[SIERRA-ADD]
+		var/list/robo_limbs = list()
+		var/list/prosthetic_temp = list()
+		//[//SIERRA-ADD]
 		for (var/M in pref.body_markings)
 			var/datum/sprite_accessory/marking/mark_style = GLOB.body_marking_styles_list[M]
 			disallowed_markings |= mark_style.disallows
@@ -489,11 +493,38 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 			var/datum/sprite_accessory/S = usable_markings[M]
 			if(is_type_in_list(S, disallowed_markings) || (S.species_allowed && !(mob_species.get_bodytype() in S.species_allowed)) || (S.subspecies_allowed && !(mob_species.name in S.subspecies_allowed)))
 				usable_markings -= M
+		//[SIERRA-ADD/EDIT]
+		for(var/P in pref.organ_data)
+			if(pref.organ_data[P] == "cyborg")
+				robo_limbs += P
 
-		var/new_marking = input(user, "Choose a body marking:", CHARACTER_PREFERENCE_INPUT_TITLE)  as null|anything in usable_markings
-		if(new_marking && CanUseTopic(user))
-			pref.body_markings[new_marking] = "#000000" //New markings start black
-			return TOPIC_REFRESH_UPDATE_PREVIEW
+		if(LAZYLEN(robo_limbs))
+			var/option = alert("Select which type of bodymarks?", "select", "Flesh", "Robotic")
+			switch(option)
+				if("Flesh")
+					var/new_marking = input(user, "Choose a body marking:", CHARACTER_PREFERENCE_INPUT_TITLE)  as null|anything in usable_markings
+					if(new_marking && CanUseTopic(user))
+						pref.body_markings[new_marking] = "#000000" //New markings start black
+				if("Robotic")
+					if(LAZYLEN(robo_limbs))
+						var/bodypart = input(user, "Body Part for marking:", CHARACTER_PREFERENCE_INPUT_TITLE)  as null|anything in robo_limbs
+						var/sorted
+						if(bodypart && CanUseTopic(user))
+							for(var/M in GLOB.body_marking_styles_list)
+								var/datum/sprite_accessory/marking/mark_style = GLOB.body_marking_styles_list[M]
+								if(mark_style.robo_paints == TRUE && !(M in prosthetic_temp))
+									if(bodypart in mark_style.body_parts)
+										LAZYADD(sorted, M)
+						var/new_robo_marking = input(user, "Choose marking:", CHARACTER_PREFERENCE_INPUT_TITLE)  as null|anything in sorted
+						if(new_robo_marking && CanUseTopic(user))
+							pref.body_markings[new_robo_marking] = "#000000"
+		else
+			var/new_marking = input(user, "Choose a body marking:", CHARACTER_PREFERENCE_INPUT_TITLE)  as null|anything in usable_markings
+			if(new_marking && CanUseTopic(user))
+				pref.body_markings[new_marking] = "#000000" //New markings start black
+
+		return TOPIC_REFRESH_UPDATE_PREVIEW
+		//[/SIERRA-ADD/EDIT]
 
 	else if(href_list["marking_remove"])
 		var/M = href_list["marking_remove"]
@@ -509,6 +540,7 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 
 	else if(href_list["reset_limbs"])
 		reset_limbs()
+		pref.body_markings.Cut() //[SIERRA-ADD
 		return TOPIC_REFRESH_UPDATE_PREVIEW
 
 	else if(href_list["limbs"])
@@ -666,6 +698,7 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 
 		if(pref.organ_data[BP_CHEST] == "cyborg")
 			organ_choices -= "Normal"
+			organ_choices -= "Assisted"
 			organ_choices += "Synthetic"
 
 		var/new_state = input(user, "What state do you wish the organ to be in?") as null|anything in organ_choices
@@ -784,8 +817,14 @@ var/global/list/valid_bloodtypes = list("A+", "A-", "B+", "B-", "AB+", "AB-", "O
 
 /datum/category_item/player_setup_item/physical/body/proc/sanitize_organs()
 	var/singleton/species/mob_species = GLOB.species_by_name[pref.species]
-	if(mob_species && mob_species.spawn_flags & SPECIES_NO_ROBOTIC_INTERNAL_ORGANS)
-		for(var/name in pref.organ_data)
+	// Prevent speices that can't have robotic organs from having them
+	if (mob_species?.spawn_flags & SPECIES_NO_ROBOTIC_INTERNAL_ORGANS)
+		for (var/name in pref.organ_data)
 			var/status = pref.organ_data[name]
-			if(status in list("assisted","mechanical"))
+			if (status in list("assisted", "mechanical"))
 				pref.organ_data[name] = null
+	// Prevent FBPs from having assisted organs, some saved characters may have them
+	if (pref.organ_data[BP_CHEST] == "cyborg" && pref.organ_data[BP_EYES] == "assisted")
+		for (var/name in pref.organ_data)
+			if (name in list("heart", "eyes", "lungs", "liver", "kidneys"))
+				pref.organ_data[name] = "mechanical"

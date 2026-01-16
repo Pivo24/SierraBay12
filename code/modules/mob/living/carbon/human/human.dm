@@ -748,7 +748,7 @@
 /mob/living/carbon/human/vomit(timevomit = 1, level = 3, delay = 0)
 	set waitfor = 0
 
-	if(!check_has_mouth() || isSynthetic() || !timevomit || !level || stat == DEAD || lastpuke)
+	if(!check_has_mouth() || isSynthetic() || !timevomit || !level || is_dead() || lastpuke)
 		return
 
 	timevomit = clamp(timevomit, 1, 10)
@@ -1679,7 +1679,7 @@
 // output for machines ^	 ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ output for people
 
 /mob/living/carbon/human/proc/pulse()
-	if (stat == DEAD)
+	if (is_real_dead())
 		return PULSE_NONE
 	var/obj/item/organ/internal/heart/H = internal_organs_by_name[BP_HEART]
 	return H ? H.pulse : PULSE_NONE
@@ -1831,7 +1831,7 @@
 
 /mob/living/carbon/human/proc/make_reagent(amount, reagent_type)
 	if(stat == CONSCIOUS)
-		var/limit = max(0, reagents.get_overdose(reagent_type) - reagents.get_reagent_amount(reagent_type))
+		var/limit = max(0, reagents.get_overdose(reagent_type) - reagents.get_reagent_amount(reagent_type) - metabolized.get_reagent_amount(reagent_type))
 		reagents.add_reagent(reagent_type, min(amount, limit))
 
 //Get fluffy numbers

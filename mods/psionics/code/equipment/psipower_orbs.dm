@@ -83,7 +83,7 @@
 	name = "orb of energy"
 	force = 5
 	edge = TRUE
-	maintain_cost = 10
+	maintain_cost = 6
 
 	item_icons = list(
 		slot_l_hand_str = 'mods/psionics/icons/psi_fd/lefthand.dmi',
@@ -290,10 +290,10 @@
 
 //FIRE ORB itself
 /obj/item/psychic_power/psifire
-	name = "orb of eternal flame"
+	name = "orb of flame"
 	force = 5
 	edge = TRUE
-	maintain_cost = 10
+	maintain_cost = 6
 
 	item_icons = list(
 		slot_l_hand_str = 'mods/psionics/icons/psi_fd/lefthand.dmi',
@@ -326,6 +326,25 @@
 		flame_power += 5
 
 	..()
+
+
+/obj/item/psychic_power/psifire/Process()
+	if(istype(owner))
+		if(!owner.on_fire)
+			owner.psi.spend_power(maintain_cost)
+	if(!owner || owner.do_psionics_check(maintain_cost, owner) || !owner.IsHolding(src))
+		if(istype(loc,/mob/living))
+			var/mob/living/carbon/human/host = loc
+			if(istype(host))
+				for(var/obj/item/organ/external/organ in host.organs)
+					for(var/obj/item/O in organ.implants)
+						if(O == src)
+							organ.implants -= src
+			host.pinned -= src
+			host.embedded -= src
+			host.drop_from_inventory(src)
+		else
+			qdel(src)
 
 /obj/item/psychic_power/psifire/attack_self(mob/living/user as mob)
 	var/pyro_rank = user.psi.get_rank(PSI_METAKINESIS)
@@ -423,13 +442,8 @@
 
 	var/obj/OBJ = A
 	if(istype(OBJ))
-		if(istype(A, /obj/item/clothing/mask/smokable/cigarette))
-			var/obj/item/clothing/mask/smokable/cigarette/S = A
-			S.light("[user] щёлкает пальцами как зажигалкой, подпаливая [S.name].")
-			playsound(S.loc, "light_bic", 100, 1, -4)
-		else
-			user.visible_message(SPAN_WARNING("[user] прислоняет руку к [OBJ]. Можно заметить, как от места соприкосновения идёт пар."))
-			OBJ.HandleObjectHeating(src, user, 700)
+		user.visible_message(SPAN_WARNING("[user] прислоняет руку к [OBJ]. Можно заметить, как от места соприкосновения идёт пар."))
+		OBJ.HandleObjectHeating(src, user, 700)
 
 //MOBS
 
@@ -490,14 +504,14 @@
 	color = "#9ee0dd"
 
 /obj/structure/girder/ice_wall
-	icon_state = "ice wall"
 	anchored = TRUE
 	density = TRUE
 	layer = ABOVE_HUMAN_LAYER
-	w_class = ITEM_SIZE_NO_CONTAINER
 	health_max = 200
 	icon = 'mods/psionics/icons/psi_fd/freeze.dmi'
 	icon_state = "ice_cube"
+	mouse_opacity = 2
+	cover = 100
 	var/timer = 30
 
 /obj/structure/girder/ice_wall/New()
@@ -542,27 +556,17 @@
 		sleep(1 SECOND)
 		T--
 	src.visible_message(SPAN_WARNING("[src] тает!"))
-	src.alpha = 200
-	sleep(2)
-	src.alpha = 150
-	sleep(2)
-	src.alpha = 100
-	sleep(2)
-	src.alpha = 50
-	sleep(2)
-	src.alpha = 20
-	sleep(2)
-	src.alpha = 10
-	qdel(src)
+	animate(src, alpha = 0, time = 10 SECONDS)
+	QDEL_IN(src, 9 SECONDS)
 
 //ATOM related stuff ending here
 
 //ICE ORB itself
 /obj/item/psychic_power/psiice
-	name = "orb of eternal cold"
+	name = "orb of ice"
 	force = 5
 	edge = TRUE
-	maintain_cost = 10
+	maintain_cost = 6
 
 	item_icons = list(
 		slot_l_hand_str = 'mods/psionics/icons/psi_fd/lefthand.dmi',
@@ -681,12 +685,6 @@
 				animate(IW, pixel_x = 0, pixel_y = 0, time = 3, easing = EASE_OUT)
 
 		..()
-
-	new /obj/structure/girder/ice_wall(get_turf(target))
-	new /obj/temporary(get_turf(target),3, 'icons/effects/effects.dmi', "extinguish")
-	target.Stun(3*cryo_rank)
-	user.visible_message(SPAN_DANGER("[user] прикасается к телу [target] побледневшей рукой, обращая его в лёд!"))
-	target.bodytemperature = 500 / cryo_rank
 	..()
 
 /obj/item/psychic_power/psiice/afterattack(atom/A as mob|obj|turf|area, mob/living/user as mob, proximity)
@@ -781,12 +779,19 @@
 
 			return TRUE
 
-		new /obj/structure/girder/ice_wall(get_turf(target))
-		new /obj/temporary(get_turf(target),3, 'icons/effects/effects.dmi', "extinguish")
-		target.Stun(3*cryo_rank)
-		user.visible_message(SPAN_DANGER("[user] прикасается к телу [target] побледневшей рукой, обращая его в лёд!"))
-		target.bodytemperature = 500 / cryo_rank
-		return TRUE
+		if(cryo_rank >= PSI_RANK_MASTER)
+			new /obj/structure/girder/ice_wall(get_turf(target))
+			new /obj/temporary(get_turf(target),3, 'icons/effects/effects.dmi', "extinguish")
+			target.Stun(3*cryo_rank)
+			user.visible_message(SPAN_DANGER("[user] прикасается к телу [target] побледневшей рукой, обращая его в лёд!"))
+			target.bodytemperature = 500 / cryo_rank
+			return TRUE
+
+		else
+			new /obj/temporary(get_turf(target),3, 'icons/effects/effects.dmi', "extinguish")
+			user.visible_message(SPAN_DANGER("[user] прикасается к телу [target] побледневшей рукой, заставляя его покрыться коркой льда!"))
+			target.bodytemperature = 400 / cryo_rank
+			return TRUE
 
 //ITEMS
 

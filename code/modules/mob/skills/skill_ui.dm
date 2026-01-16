@@ -1,6 +1,7 @@
 //Holders/managers for nano_ui for the skill panel.
 
 /datum/nano_module/skill_ui
+	available_to_ai = FALSE
 	var/datum/skillset/skillset
 	var/template = "skill_ui.tmpl"
 	var/hide_unskilled = FALSE
@@ -241,6 +242,9 @@ Similar, but for off-station jobs (Bearcat, Verne, survivor etc.).
 */
 /datum/nano_module/skill_ui/antag/station/offstation
 	max_choices = list(0, 2, 2, 1, 1)
+
+/datum/nano_module/skill_ui/antag/ert
+	max_choices = list(0, 0, 0, 1, 1) // More default skills but less picks. Focused for class specialization for faster deployment
 /*
 Admin version, with debugging options.
 */

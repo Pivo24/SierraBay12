@@ -129,34 +129,34 @@ Please contact me on #coderbus IRC. ~Carn x
 #define HO_MUTATIONS_LAYER  2
 #define HO_SKIN_LAYER       3
 #define HO_SURGERY_LAYER    4 //bs12 specific.
-#define HO_UNDERWEAR_LAYER  5
-#define HO_UNIFORM_LAYER    6
-#define HO_DAMAGE_LAYER     7
-#define HO_ID_LAYER         8
-#define HO_SHOES_LAYER      9
-#define HO_GLOVES_LAYER     10
-#define HO_BELT_LAYER       11
-#define HO_SUIT_LAYER       12
-#define HO_TAIL_LAYER       13 //bs12 specific. this hack is probably gonna come back to haunt me
-#define HO_GLASSES_LAYER    14
-#define HO_BELT_LAYER_ALT   15
-#define HO_SUIT_STORE_LAYER 16
-#define HO_BACK_LAYER       17
-#define HO_HAIR_LAYER       18 //TODO: make part of head layer?
-#define HO_EARS_LAYER       19
-#define HO_ALT_HEAD_LAYER   20
-#define HO_GOGGLES_LAYER    21
-#define HO_FACEMASK_LAYER   22
-#define HO_HEAD_LAYER       23
-#define HO_COLLAR_LAYER     24
-#define HO_HANDCUFF_LAYER   25
-#define HO_L_HAND_LAYER     26
-#define HO_R_HAND_LAYER     27
-#define HO_FIRE_LAYER       28 //If you're on fire
-#define HO_EFFECTS_LAYER    29
-#define TOTAL_LAYERS        30
+#define HO_SYNTH_SKIN_LAYER 5 //[SIERRA-ADD] Все последующие слои в ориге имеюют значени -1 от текущего
+#define HO_UNDERWEAR_LAYER  6
+#define HO_UNIFORM_LAYER    7
+#define HO_DAMAGE_LAYER     8
+#define HO_ID_LAYER         9
+#define HO_SHOES_LAYER      10
+#define HO_GLOVES_LAYER     11
+#define HO_BELT_LAYER       12
+#define HO_SUIT_LAYER       13
+#define HO_TAIL_LAYER       14 //bs12 specific. this hack is probably gonna come back to haunt me
+#define HO_GLASSES_LAYER    15
+#define HO_BELT_LAYER_ALT   16
+#define HO_SUIT_STORE_LAYER 17
+#define HO_BACK_LAYER       18
+#define HO_HAIR_LAYER       19 //TODO: make part of head layer?
+#define HO_EARS_LAYER       20
+#define HO_ALT_HEAD_LAYER   21
+#define HO_GOGGLES_LAYER    22
+#define HO_FACEMASK_LAYER   23
+#define HO_HEAD_LAYER       24
+#define HO_COLLAR_LAYER     25
+#define HO_HANDCUFF_LAYER   26
+#define HO_L_HAND_LAYER     27
+#define HO_R_HAND_LAYER     28
+#define HO_FIRE_LAYER       29 //If you're on fire
+#define HO_EFFECTS_LAYER    30
+#define TOTAL_LAYERS        31
 
-//////////////////////////////////
 
 /mob/living/carbon/human
 	var/list/overlays_standing[TOTAL_LAYERS]
@@ -184,11 +184,17 @@ Please contact me on #coderbus IRC. ~Carn x
 		var/entry = visible_overlays[i]
 		if(istype(entry, /image))
 			var/image/overlay = entry
+			//SIERRA-ADD
+			overlay.filters = filters
+			//SIERRA-ADD
 			if(i != HO_DAMAGE_LAYER && i != HO_BODY_LAYER)
 				overlay.transform = get_lying_offset(overlay)
 			overlays_to_apply += overlay
 		else if(istype(entry, /list))
 			for(var/image/overlay in entry)
+				//SIERRA-ADD
+				overlay.filters = filters
+				//SIERRA-ADD
 				if(i != HO_DAMAGE_LAYER && i != HO_BODY_LAYER)
 					overlay.transform = get_lying_offset(overlay)
 				overlays_to_apply += overlay
@@ -196,7 +202,13 @@ Please contact me on #coderbus IRC. ~Carn x
 	var/obj/item/organ/external/head/head = organs_by_name[BP_HEAD]
 	if(istype(head) && !head.is_stump())
 		var/image/I = head.get_eye_overlay()
-		if(I) overlays_to_apply += I
+		//SIERRA-REMOVE 		if(I) overlays_to_apply += I
+		//SIERRA-ADD
+		if(I)
+			I.filters = filters
+			overlays_to_apply += I
+		//SIERRA-ADD
+
 
 	if(auras)
 		overlays_to_apply += auras
@@ -483,6 +495,7 @@ var/global/list/damage_icon_parts = list()
 	update_surgery(0)
 	UpdateDamageIcon()
 	queue_icon_update()
+	update_synth_skin() //[SIERRA-ADD]
 	//Hud Stuff
 	update_hud()
 
@@ -682,7 +695,7 @@ var/global/list/damage_icon_parts = list()
 
 	var/species_tail = species.get_tail(src)
 
-	if(species_tail && !(wear_suit && wear_suit.flags_inv & HIDETAIL))
+	if(species_tail && !(wear_suit?.flags_inv & HIDETAIL) && !(w_uniform?.flags_inv & HIDETAIL))
 		var/icon/tail_s = get_tail_icon()
 		overlays_standing[HO_TAIL_LAYER] = image(tail_s, icon_state = "[species_tail]_s")
 		animate_tail_reset(0)
@@ -750,7 +763,7 @@ var/global/list/damage_icon_parts = list()
 		queue_icon_update()
 
 /mob/living/carbon/human/proc/animate_tail_reset(update_icons=1)
-	if(stat != DEAD)
+	if(!is_dead())
 		set_tail_state("[species.get_tail(src)]_idle[rand(0,9)]")
 	else
 		set_tail_state("[species.get_tail(src)]_static")
@@ -830,10 +843,28 @@ var/global/list/damage_icon_parts = list()
 	if(update_icons)
 		queue_icon_update()
 
+//[SIERRA-ADD]
+/mob/living/carbon/human/proc/update_synth_skin()
+	overlays_standing[HO_SYNTH_SKIN_LAYER] = null
+	var/synth_icon = 'mods/ipc_mods/icons/pptdmg.dmi'
+	var/image/standing_image = image(synth_icon, icon_state = "00")
+	var/list/overlays_to_add = list()
+	for(var/obj/item/organ/external/O in organs)
+		if(O.is_stump())
+			continue
+		if(O.have_synth_skin)
+			if(O.synth_skin_health < O.max_damage * 0.5)
+				LAZYADD(overlays_to_add, image(icon = synth_icon, icon_state = "[O.icon_name]", layer = -HO_SYNTH_SKIN_LAYER))
+
+	standing_image.AddOverlays(overlays_to_add)
+	overlays_standing[HO_SYNTH_SKIN_LAYER] = standing_image
+	queue_icon_update()
+//[/SIERRA-ADD]
 //Human Overlays Indexes/////////
 #undef HO_MUTATIONS_LAYER
 #undef HO_SKIN_LAYER
 #undef HO_SURGERY_LAYER
+#undef HO_SYNTH_SKIN_LAYER //[SIERRA-ADD]
 #undef HO_UNDERWEAR_LAYER
 #undef HO_UNIFORM_LAYER
 #undef HO_DAMAGE_LAYER

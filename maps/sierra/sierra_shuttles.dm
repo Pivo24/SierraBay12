@@ -293,7 +293,7 @@ SIERRA_ESCAPE_POD(11)
 
 //NT Rescue Shuttle
 
-/datum/shuttle/autodock/multi/antag/rescue
+/datum/shuttle/autodock/multi/antag/ert
 	destination_tags = list(
 		"nav_ert_deck1",
 		"nav_ert_deck2",
@@ -398,15 +398,15 @@ SIERRA_ESCAPE_POD(11)
 	ceiling_type = /turf/simulated/floor/shuttle_ceiling/sierra
 	warmup_time = 7
 
-/datum/shuttle/autodock/overmap/exploration_shuttle/refresh_fuel_ports_list()	// Setting access onto APC and air alarms
+/datum/shuttle/autodock/overmap/exploration_shuttle/refresh_fuel_ports_list()	// Setting access onto APC and air alarms. "Overrides code. Overrides map. WHY?!" - LordNest
 	..()
 	for(var/area/A in shuttle_area)
 		for(var/obj/machinery/alarm/alarm in A)
 			if(alarm.req_access)
-				alarm.req_access = list(list(access_engine, access_field_eng))  // engineering OR field eng
+				alarm.req_access = list(list(access_engine, access_field_eng, access_expedition_shuttle_helm))  // engineering OR field eng
 		for(var/obj/machinery/power/apc/apc in A)
 			if(apc.req_access)
-				apc.req_access = list(list(access_engine, access_field_eng))  // engineering OR field eng
+				apc.req_access = list(list(access_engine, access_field_eng, access_expedition_shuttle_helm))  // engineering OR field eng
 
 /obj/shuttle_landmark/sierra/hangar/exploration_shuttle
 	name = "Charon Hangar"
@@ -531,7 +531,7 @@ SIERRA_ESCAPE_POD(11)
 	landmark_tag = "nav_transit_crucian"
 
 //Makes the deck management program use hangar access
-/datum/nano_module/deck_management
+/datum/nano_module/program/deck_management
 	default_access = list(access_hangar, access_cargo, access_heads)
 
 // away transit
